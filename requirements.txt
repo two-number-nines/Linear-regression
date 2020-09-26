@@ -1,1 +1,4 @@
 click
+pathlib
+numpy
+nptyping
