@@ -25,3 +25,5 @@ def predict_price(mileage: int):
 
 if __name__ == "__main__":
     predict_price()
+    
+# Final theta's:  -3.778663027321963e+252 -9.14901111311797e+250

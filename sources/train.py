@@ -15,8 +15,7 @@ logging.basicConfig(level=logging.INFO)
 # then you multiply that average with learningRate which you can choose yourself (it a hyperparameter aka you can change it manually)
 # you can change it because if you make it bigger then that average difference you calculated
 # and will make bigger leaps to adjust
-
-
+# convergence
 
 def update_thetas(theta_0, theta_1, mileage, price, total, learning_rate):
     theta_0_deriv = 0
@@ -25,10 +24,10 @@ def update_thetas(theta_0, theta_1, mileage, price, total, learning_rate):
     for i in range(total):
         # Calculate partial derivatives
         # -2x(y - (mx + b))
-        theta_0_deriv += -2*mileage[i] * (price[i] - (theta_0*mileage[i] + theta_1))
+        theta_0_deriv += -2*mileage[i] * (price[i] - (theta_0*mileage[i] + theta_1)) # weight
 
         # -2(y - (mx + b))
-        theta_1_deriv += -2*(price[i] - (theta_0*mileage[i] + theta_1))
+        theta_1_deriv += -2*(price[i] - (theta_0*mileage[i] + theta_1)) #  bias
 
     # We subtract because the derivatives point in direction of steepest ascent
     theta_0 -= (theta_0_deriv / total) * learning_rate
@@ -41,7 +40,7 @@ def cost_function(theta_0, theta_1, mileage, price, total):
     of its ability to estimate the relationship between X and y'''
     error = 0.0
     for i in range(total):
-        error += (price[i] - (theta_0 * mileage[i] + theta_1))**2   # why is it this formula?
+        error += (price[i] - (theta_0 * mileage[i] + theta_1))**2   # why is it this formula? #MSE square makes everything positive 
     return error / total
 
 def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
@@ -53,7 +52,8 @@ def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
     price = [x[1] for x in dataset]
     total = len(dataset)
     cost_history = []
-    for i in range(10):
+    # gradient descent
+    for i in range(100):
         theta_0, theta_1 = update_thetas(theta_0, theta_1, mileage, price, total, learning_rate)
 
         #Calculate cost for auditing purposes
@@ -63,6 +63,7 @@ def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
         # Log Progress
         if i % 10 == 0:
             print(f"iter={i}    theta_0={theta_0}    theta_1={theta_1}    cost={cost}")
+    print("Final theta's: ", theta_0, theta_1)
 
 
 
