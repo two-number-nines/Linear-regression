@@ -40,7 +40,7 @@ def cost_function(theta_0, theta_1, mileage, price, total):
     of its ability to estimate the relationship between X and y'''
     error = 0.0
     for i in range(total):
-        error += (price[i] - (theta_0 * mileage[i] + theta_1))**2   # why is it this formula? #MSE square makes everything positive 
+        error += (price[i] - (theta_0 * mileage[i] + theta_1))**2   #MSE 
     return error / total
 
 def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
