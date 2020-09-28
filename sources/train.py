@@ -5,14 +5,8 @@ from nptyping import NDArray, Int
 
 logging.basicConfig(level=logging.INFO)
 
-#gradient descent is for updating the theta's
-# The estimatePrice(mileage[i]) will be your preducted value
-# price[i] is already given probably
-# 1/m * E is just mean(average) of all those differences written in a fancy way
-# m is how many times you take that difference
-# and i is like an index for which given + predicted price values are u doing this
-# so now 1/m * E(estimatePrice(mileage[i]) - price[i]) is just the average difference between what needed to be there and what you model predicted
-# then you multiply that average with learningRate which you can choose yourself (it a hyperparameter aka you can change it manually)
+# gradient descent is for updating the theta's
+# learningRate which you can choose yourself (it a hyperparameter aka you can change it manually)
 # you can change it because if you make it bigger then that average difference you calculated
 # and will make bigger leaps to adjust
 # convergence
