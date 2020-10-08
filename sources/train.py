@@ -27,15 +27,15 @@ def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
     # gradient descent
     while not converged:
         # for each training sample, compute the gradient (d/d_theta j(theta))
-        grad0 = 1.0/total * sum([abs((t0 + t1*mileage[i] - price[i])) for i in range(total)]) 
-        grad1 = 1.0/total * sum([abs((t0 + t1*mileage[i] - price[i])*mileage[i]) for i in range(total)])
-        # print(grad0)
-        # # print(grad1)
+        grad0 = 1.0/total * sum([(t0 + t1*mileage[i] - price[i]) for i in range(total)]) 
+        grad1 = 1.0/total * sum([(t0 + t1*mileage[i] - price[i])*mileage[i] for i in range(total)])
+        print(grad0)
+        # print(grad1)
         # exit()
 
         # update the theta_temp
-        temp0 = t0 - learning_rate * grad0
-        temp1 = t1 - learning_rate * grad1
+        temp0 = t0 + learning_rate * grad0
+        temp1 = t1 + learning_rate * grad1
     
         # update theta
         t0 = temp0
