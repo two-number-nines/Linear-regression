@@ -2,26 +2,29 @@ import numpy as np
 from pathlib import Path
 import logging
 from nptyping import NDArray, Int
+import random
+import  matplotlib.pyplot as plt
+from sources.predict import estimate_price
 
 logging.basicConfig(level=logging.INFO)
 
-# gradient descent is for updating the theta's
-# learningRate which you can choose yourself (it a hyperparameter aka you can change it manually)
-# you can change it because if you make it bigger then that average difference you calculated
-# and will make bigger leaps to adjust
-# convergence
 
 def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
     print(dataset)
     converged = False
     iter = 0
-    ep = 1
-    max_iter = 100
-    learning_rate = 0.1
-    t0 = 0.01                                            # the weight
-    t1 = 0.01                                            # the bias
-    mileage = [x[0] for x in dataset]
-    price = [x[1] for x in dataset]
+    ep = 0.000000000000001
+    max_iter = 10000
+    learning_rate = 0.5
+    t0 = random.uniform(0,1)                                            # the weight
+    t1 = random.uniform(0,1)                                            # the bias
+    mileage1 = [x[0] for x in dataset]
+    mileage = [float(i)/max(mileage1) for i in mileage1]
+    price1 = [x[1] for x in dataset]
+    price = [float(i)/max(price1) for i in price1]
+    # other way of doing it
+    # mileage = [(float(i) - min(mileage1)) / (max(mileage1) - min(mileage1)) for i in mileage1]
+    # price = [(float(i) - min(price1)) / (max(price1) - min(price1)) for i in price1]
     total = len(dataset)
     cost = sum([(t0 + t1*mileage[i] - price[i])**2 for i in range(total)])
     # gradient descent
@@ -29,13 +32,10 @@ def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
         # for each training sample, compute the gradient (d/d_theta j(theta))
         grad0 = 1.0/total * sum([(t0 + t1*mileage[i] - price[i]) for i in range(total)]) 
         grad1 = 1.0/total * sum([(t0 + t1*mileage[i] - price[i])*mileage[i] for i in range(total)])
-        print(grad0)
-        # print(grad1)
-        # exit()
 
         # update the theta_temp
-        temp0 = t0 + learning_rate * grad0
-        temp1 = t1 + learning_rate * grad1
+        temp0 = t0 - learning_rate * grad0
+        temp1 = t1 - learning_rate * grad1
     
         # update theta
         t0 = temp0
@@ -56,7 +56,24 @@ def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
             converged = True
 
         print(f"iter={iter} theta_0={t0} theta_1={t1} cost={cost}")
-    print("Final theta's: ", t0, t1)
+
+    print("\n\nFinal theta's (with standardization): ", t0, t1)
+
+    # t0 = t0*max(mileage1)
+    # t1 = t1*max(price1)
+    t1 = (max(price1) - min(price1)) * t1 / (max(mileage1) - min(mileage1))
+    t0 = min(price) + t0 * (max(price1) - min(price1)) + t1 * (1 - min(mileage1))
+    print("Final theta's:                        ", t0, t1)
+
+
+    plt.title('Real values')
+    plt.ylabel('Price')
+    plt.xlabel('Mileage')
+    plt.plot(mileage1, price1, 'ro')
+    plt.plot([min(mileage1), max(mileage1)], [estimate_price(t0, t1, min(mileage1)), \
+            estimate_price(t0, t1, max(mileage1))])
+    plt.show()
+
 
 
 

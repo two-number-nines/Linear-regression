@@ -2,8 +2,8 @@ import click
 from pathlib import Path
 import logging
 
-# estimatePrice(mileage) = θ0 + (θ1 ∗ mileage)
-# what is theta
+def estimate_price(theta0, theta1, mileage):
+    return (theta0 + (theta1 * mileage))
 
 @click.command()
 @click.option('--mileage', prompt="Give the mileage for your car please", type=int)
@@ -25,5 +25,3 @@ def predict_price(mileage: int):
 
 if __name__ == "__main__":
     predict_price()
-    
-# Final theta's:  -3.778663027321963e+252 -9.14901111311797e+250

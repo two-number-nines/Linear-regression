@@ -2,3 +2,4 @@ click
 pathlib
 numpy
 nptyping
+matplotlib
