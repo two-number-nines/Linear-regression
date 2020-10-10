@@ -1,6 +1,5 @@
 import  matplotlib.pyplot as plt
 from dataclasses import dataclass
-from sources.predict import estimate_price
 import random
 
 @dataclass
