@@ -39,7 +39,7 @@ def train_model(dataset: NDArray[(24, 2), Int[64]], model: LinearRegression) -> 
     return model.t0, model.t1
 
 
-def main(max_iteration = 10000, crit_convergence = 0.00001, learning_rate = 0.1):
+def initialize_model(max_iteration = 10000, crit_convergence = 0.00001, learning_rate = 0.1):
     data_file = Path(Path.cwd()/"data.csv")
     if data_file.exists():
         dataset = np.genfromtxt(data_file, delimiter=',', skip_header=1, dtype=int)
@@ -62,4 +62,4 @@ def main(max_iteration = 10000, crit_convergence = 0.00001, learning_rate = 0.1)
 
 
 if __name__ == "__main__":
-    main()
+    initialize_model()
