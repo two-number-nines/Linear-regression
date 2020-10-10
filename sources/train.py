@@ -2,89 +2,64 @@ import numpy as np
 from pathlib import Path
 import logging
 from nptyping import NDArray, Int
-import random
-import  matplotlib.pyplot as plt
-from sources.predict import estimate_price
+from typing import Tuple
+from sources.classes import LinearRegression, PlotGraph
 
 logging.basicConfig(level=logging.INFO)
 
 
-def linear_regression(dataset: NDArray[(24, 2), Int[64]]):
-    print(dataset)
+def train_model(dataset: NDArray[(24, 2), Int[64]], model: LinearRegression) -> Tuple[float, float]:
+
+    # initialize condition variables
+    cost = model.cost()
+    iteration = 1
     converged = False
-    iter = 0
-    ep = 0.000000000000001
-    max_iter = 10000
-    learning_rate = 0.5
-    t0 = random.uniform(0,1)                                            # the weight
-    t1 = random.uniform(0,1)                                            # the bias
-    mileage1 = [x[0] for x in dataset]
-    mileage = [float(i)/max(mileage1) for i in mileage1]
-    price1 = [x[1] for x in dataset]
-    price = [float(i)/max(price1) for i in price1]
-    # other way of doing it
-    # mileage = [(float(i) - min(mileage1)) / (max(mileage1) - min(mileage1)) for i in mileage1]
-    # price = [(float(i) - min(price1)) / (max(price1) - min(price1)) for i in price1]
-    total = len(dataset)
-    cost = sum([(t0 + t1*mileage[i] - price[i])**2 for i in range(total)])
-    # gradient descent
+
+    # main loop
     while not converged:
-        # for each training sample, compute the gradient (d/d_theta j(theta))
-        grad0 = 1.0/total * sum([(t0 + t1*mileage[i] - price[i]) for i in range(total)]) 
-        grad1 = 1.0/total * sum([(t0 + t1*mileage[i] - price[i])*mileage[i] for i in range(total)])
+        grad0, grad1 = model.gradient_descent()
+        model.update_thetas(grad0, grad1)
 
-        # update the theta_temp
-        temp0 = t0 - learning_rate * grad0
-        temp1 = t1 - learning_rate * grad1
-    
-        # update theta
-        t0 = temp0
-        t1 = temp1
+        new_cost = model.cost()
 
-        # mean squared error
-        new_cost = sum([(t0 + t1*mileage[i] - price[i])**2 for i in range(total)])
-
-        if abs(cost - new_cost) <= ep:
-            print ('Converged, iterations: ', iter, '!!!')
+        if abs(cost - new_cost) <= model.crit_convergence:
+            logging.info(f" Converged at iterations: {iteration}")
             converged = True
+        cost = new_cost
+        iteration += 1
     
-        cost = new_cost   # update error 
-        iter += 1         # update iter
-    
-        if iter == max_iter:
-            print ('Max interactions exceeded!')
+        if iteration == model.max_iteration:
+            logging.info(' Max iteration exceeded before converging.')
             converged = True
+    model.unnormalize_thetas()
+    # plot = PlotGraph()
+    # plot.plot_basic_graph(model.undependent, model.dependent, model.t0, model.t1)
+    print(model.t0, model.t1)
 
-        print(f"iter={iter} theta_0={t0} theta_1={t1} cost={cost}")
-
-    print("\n\nFinal theta's (with standardization): ", t0, t1)
-
-    # t0 = t0*max(mileage1)
-    # t1 = t1*max(price1)
-    t1 = (max(price1) - min(price1)) * t1 / (max(mileage1) - min(mileage1))
-    t0 = min(price) + t0 * (max(price1) - min(price1)) + t1 * (1 - min(mileage1))
-    print("Final theta's:                        ", t0, t1)
+    return model.t0, model.t1
 
 
-    plt.title('Real values')
-    plt.ylabel('Price')
-    plt.xlabel('Mileage')
-    plt.plot(mileage1, price1, 'ro')
-    plt.plot([min(mileage1), max(mileage1)], [estimate_price(t0, t1, min(mileage1)), \
-            estimate_price(t0, t1, max(mileage1))])
-    plt.show()
-
-
-
-
-def extract_data():
+def main(max_iteration = 10000, crit_convergence = 0.00001, learning_rate = 0.1):
     data_file = Path(Path.cwd()/"data.csv")
     if data_file.exists():
         dataset = np.genfromtxt(data_file, delimiter=',', skip_header=1, dtype=int)
-        linear_regression(dataset)
+        # extract from csv file.
+        price = [x[1] for x in dataset]
+        mileage = [x[0] for x in dataset]
+
+        # normalize which the model requires.
+        price_n = [(float(i) - min(price)) / (max(price) - min(price)) for i in price]
+        mileage_n = [(float(i) - min(mileage)) / (max(mileage) - min(mileage)) for i in mileage]
+
+        # initialize the model with standard values
+        model = LinearRegression(price, mileage, price_n, mileage_n, len(dataset), max_iteration, crit_convergence, learning_rate)
+
+        t0, t1 = train_model(dataset, model)
+        with open('thetas.csv', 'w') as f:
+            f.write(f"{t0},{t1}")
     else:
         logging.error(f"Could not find your dataset, should be stored as such: {Path.cwd()}/ndata.csv")
 
 
 if __name__ == "__main__":
-    extract_data()
+    main()
