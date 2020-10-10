@@ -2,6 +2,7 @@ import  matplotlib.pyplot as plt
 from dataclasses import dataclass
 import random
 
+
 @dataclass
 class LinearRegression:
 
@@ -35,6 +36,7 @@ class LinearRegression:
         self.t1 = (max(self.dependent) - min(self.dependent)) * self.t1 / (max(self.undependent) - min(self.undependent))
         self.t0 = min(self.dependent) + self.t0 * (max(self.dependent) - min(self.dependent)) + self.t1 * (1 - min(self.undependent))
 
+
 @dataclass
 class PlotGraph:
 
@@ -46,8 +48,10 @@ class PlotGraph:
     plt.ylabel(ylabel)
     plt.xlabel(xlabel)
 
-    #x is mileage
+    def __estimate_price(self, theta0, theta1, mileage):
+        return (theta0 + (theta1 * mileage))
+
     def plot_basic_graph(self, x: list, y: list, t0: float, t1: float):
         plt.plot(x, y, 'ro')
-        plt.plot([min(x), max(x)], [estimate_price(t0, t1, min(x)), estimate_price(t0, t1, max(x))])
+        plt.plot([min(x), max(x)], [self.__estimate_price(t0, t1, min(x)), self.__estimate_price(t0, t1, max(x))])
         plt.show()
