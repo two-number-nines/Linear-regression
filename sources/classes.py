@@ -27,10 +27,8 @@ class LinearRegression:
         return grad0, grad1
 
     def update_thetas(self, grad0, grad1):
-        temp0 = self.t0 - self.learning_rate * grad0
-        temp1 = self.t1 - self.learning_rate * grad1  
-        self.t0 = temp0
-        self.t1 = temp1
+        self.t0 = self.t0 - self.learning_rate * grad0
+        self.t1 = self.t1 - self.learning_rate * grad1  
 
     def unnormalize_thetas(self):
         self.t1 = (max(self.dependent) - min(self.dependent)) * self.t1 / (max(self.undependent) - min(self.undependent))
